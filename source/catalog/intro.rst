@@ -1,5 +1,58 @@
 
 
+Creating a Catalog in Seconds
+-----------------------------
+
+Many users have data in an arbitrary format (e.g. an Excel file from a
+paper) or another source of annotation such as BioMART. BioR allows
+users to integrate additional sources of information into the system as
+catalogs extremely rapidly. Unlike most other tools, BioR does not
+require a specific bioinformatics format, all you need to be able to do
+is convert the files into JSON, and BioR has many utilities to do that
+for you!
+
+As an example, lets integrate dbSNFP2.1 into BioR (availible from here:
+`https://sites.google.com/site/jpopgen/dbNSFP <https://sites.google.com/site/jpopgen/dbNSFP>`__).
+
+First Genes - we’ll take the header line (first line in the file),
+convert parentheses to underscores, then pipe it into
+bior_create_config_for_tab_to_tjson to construct the config file we need
+to build the catalog:
+
++-----------------------------------------------------------------------+
+| $ head -n 1 dbNSFP2.1_gene \| tr "(" "_" \| tr ")" "_" \|             |
+| bior_create_config_for_tab_to_tjson > gene.config                     |
+|                                                                       |
+| $ vim gene.config (to identify the \_landmark golden identifier)      |
+|                                                                       |
+| $ cat dbNSFP2.1_gene \| bior_tab_to_tjson -c gene.config >            |
+| dbNSFP2.1_gene.tjson                                                  |
+|                                                                       |
+| $ bior_create_catalog -c -1 -i dbNSFP2.1_gene.tjson -o dbNSFP2.1_gene |
++-----------------------------------------------------------------------+
+
+Then Variants:
+
++-----------------------------------------------------------------------+
+| $ cat dbNSFP2.1_variant\* \| grep -v "^#" > dbNSFP2.1_variant         |
+|                                                                       |
+| $ head -n 1                                                           |
+| dbNSFP2.1_variant.chr1|bior_create_config_for_tab_to_tjson >          |
+| variant.config                                                        |
+|                                                                       |
+| $ vim variant.config (to columns for \_landmark, \_minBP, \_maxBP,    |
+| \_refAllele, and \_altAllele)                                         |
+|                                                                       |
+| $ cat dbNSFP2.1_gene \| bior_tab_to_tjson -c gene.config >            |
+| dbNSFP2.1_gene.tjson                                                  |
+|                                                                       |
+| $ bior_create_catalog -c -1 variant.tjson -o dbNSFP2.1_variant        |
++-----------------------------------------------------------------------+
+
+It is really that simple, now dbNSFP is integrated into BioR! To use it,
+make sure to index as needed using bior_index_catalog command.
+
+
 BioR Catalog Shortcut
 ---------------------
 
@@ -662,3 +715,6 @@ bior_vcf_to_tjson type:
 |                                                                          |
 | ...                                                                      |
 +--------------------------------------------------------------------------+
+
+
+
