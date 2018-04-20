@@ -1,5 +1,5 @@
 Sun Grid Engine
-===================
+===============
 
 This section gives tips on how to configure a Sun Grid Engine (SGE) job
 to request the right amount of resources to successfully execute one or
